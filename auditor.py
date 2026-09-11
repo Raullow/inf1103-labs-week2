@@ -7,8 +7,8 @@ while stock_quantity >= 0:
         inventory_input = (input("Enter stock quantity: "))
         try:
             if inventory_input == "quit":
-                print("Total stock quantity = ", stock_quantity_total)
-                print("Rejected entries = ", rejected_entries)
+                print("Total units proccessed: ", stock_quantity_total)
+                print("Number of Failled/Rejected entries: ", rejected_entries)
                 break
             if int(inventory_input) <= 0:
                 print("Inventory must be greater than 0. Please try again.")
@@ -19,7 +19,7 @@ while stock_quantity >= 0:
             if(stock_quantity_total > 500):
                 print("Total stock quantity exceeded 500. Please try again.")
                 break
-            print("Added ", stock_quantity, " units". Current inventory: , "stock_quantity_total")
+            print("Added ", stock_quantity, " units. Current inventory: ", stock_quantity_total)
             
         except ValueError:
             print("Invalid input. Please enter a valid integer.")
