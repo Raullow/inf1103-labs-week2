@@ -11,6 +11,9 @@ def get_valid_input():
             if int(inventory_input) <= 0:
                 add_failed_entry()
                 print("Inventory must be greater than 0. Please try again.")
+            elif int(inventory_input) + stock_quantity_total > 500:
+                add_failed_entry()
+                print("Total stock quantity exceeded 500. Please try again.")
             else:
                 return inventory_input
         except ValueError:
@@ -27,6 +30,7 @@ def calculate_tax(amount):
     return amount
 def generate_report(total_units, failed_entries):
     print("Total units processed: ", total_units)
+    print("Total tax of deliveries: ", calculate_tax(total_units))
     print("Number of Failed/Rejected entries: ", failed_entries)
 def add_failed_entry():
     global rejected_entries
