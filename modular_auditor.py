@@ -1,5 +1,4 @@
 stock_quantity_total = 0
-stock_quantity = 0
 rejected_entries = 0
 
 def get_valid_input():
