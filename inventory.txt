@@ -1,3 +1,3 @@
 Wireless Mouse,2 
 Keyboard,1 
-USB cable,3 
+USB cable,3

@@ -67,7 +67,6 @@ def save_inventory(order):
             for item in order:
 
                 inventory.write(f"{str(item[0])},{str(item[1])} \n")
-                print(f"{item[0]}, {item[1]}")
 
             print("Order successfully saved to " + file_path)
     except ValueError:
