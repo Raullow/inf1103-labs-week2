@@ -59,7 +59,6 @@ def get_valid_input():
         return order_arr
 
 def save_inventory(order):
-    print(order)
     try:
         with open(file_path, "a", encoding="utf-8") as inventory:
             # inventory.write(str(order))
@@ -67,6 +66,7 @@ def save_inventory(order):
             for item in order:
 
                 inventory.write(f"{str(item[0])},{str(item[1])} \n")
+                print(f"{item[0]}, {item[1]}")
 
             print("Order successfully saved to " + file_path)
     except ValueError:
