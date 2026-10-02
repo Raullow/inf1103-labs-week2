@@ -24,8 +24,10 @@ def main():
         print("\nUpdate Stock")
         product_id_input = get_valid_input("Enter Product ID to update stock: ", validate_product_id, "Product ID not found. Please try again.")
         update_stock(product_id_input)
-    # elif(menu_input == "4"):
-
+    elif(menu_input == "4"):
+        print("\nSearch Product")
+        product_id_input = get_valid_input("Enter Product ID to search: ", validate_product_id, "Product ID not found. Please try again.")
+        search_product(product_id_input)
     # elif(menu_input == "5"):
 
     elif(menu_input == "6"):
@@ -150,6 +152,26 @@ def update_stock(product_id):
     with open(file_path, "w") as file:
         json.dump(products, file, indent=4)
     print(f"\nStock for Product ID {product_id} updated to {new_quantity_input}.")
+
+def search_product(product_id):
+    try:
+        with open(file_path, "r") as inventory:
+            products = json.load(inventory)
+    except json.JSONDecodeError:
+        print("Inventory is empty. Cannot search for products.")
+        return
+
+    for product in products["inventory"]:
+        if product["id"] == product_id:
+            print("\nProduct found: \n" +
+                "----------------------------\n" +
+                f"ID: {product['id']} \n" +
+                f"Name: {product['name']} \n" +
+                f"Price: {product['price']} \n" +
+                f"Quantity: {product['quantity']} \n" +
+                "----------------------------\n")
+            return
+    print("Product ID not found.")
 
 def save_inventory(order):
     try:
