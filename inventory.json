@@ -1,10 +1,22 @@
 {
     "inventory": [
         {
-            "id": "er",
-            "name": "egr",
-            "price": "34",
+            "id": "P001",
+            "name": "Monitor",
+            "price": "150",
             "quantity": "20"
+        },
+        {
+            "id": "P002",
+            "name": "Mouse",
+            "price": "30",
+            "quantity": "20"
+        },
+        {
+            "id": "P003",
+            "name": "mm",
+            "price": "34",
+            "quantity": "4"
         }
     ]
 }
