@@ -15,6 +15,7 @@ def main():
 
     while True:
         menu_input = input("Enter option: ")
+        quit_application(menu_input)
         if(menu_input == "1"):
             load_inventory()
         elif(menu_input == "2"):
