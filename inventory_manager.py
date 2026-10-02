@@ -1,3 +1,5 @@
+import json
+
 stock_quantity_total = 0
 rejected_entries = 0
 file_path = "inventory.json"
@@ -18,8 +20,10 @@ def main():
         load_inventory()
     elif(menu_input == "2"):
         add_product()
-    # elif(menu_input == "3"):
-
+    elif(menu_input == "3"):
+        print("\nUpdate Stock")
+        product_id_input = get_valid_input("Enter Product ID to update stock: ", validate_product_id, "Product ID not found. Please try again.")
+        update_stock(product_id_input)
     # elif(menu_input == "4"):
 
     # elif(menu_input == "5"):
@@ -80,19 +84,23 @@ def load_inventory():
             pass
     # If json file exists - Read it
     except FileExistsError:
-        with open(file_path, "r", encoding="utf-8") as inventory:
-            orders = inventory.read()
+        try:
+            with open(file_path, "r", encoding="utf-8") as inventory:
+                products = json.load(inventory)
 
-            # Check if json file is empty If not display data
-            if not orders:
-                print("There are no orders currently.")
-            else:
-                print("Current Orders: " + "\n")
-                print(orders)
-                print("\n")
+                # Check if json file is empty If not display data
+                if not products["inventory"]:
+                    print("There are no products currently.")
+                else:
+                    print("Current Inventory\n"
+                    "-----------------")
+                    for product in products["inventory"]:
+                        print(f"ID: {product['id']} | Name: {product['name']} | Price: {product['price']} | Quantity: {product['quantity']}")
+                    print("------------------")
+        except json.JSONDecodeError:
+            print("There are no products currently.")
     except ValueError:
-        ("Error")
-        
+        print("Error")
 
 def add_product():
 
@@ -101,11 +109,47 @@ def add_product():
     product_price_input = get_valid_input("Enter Product Price: ", validate_price, "Please enter a valid price.")
     product_quantity_input = get_valid_input("Enter Product Quantity: ", validate_quantity, "Please enter a valid quantity.")
 
-    product_arr = [productId_input, product_name_input, product_price_input, product_quantity_input]
-    print(f"Product added: {product_arr}")
-    print("Product added successfully!")
+    product_obj = {
+        "id": productId_input,
+        "name": product_name_input,
+        "price": product_price_input,
+        "quantity": product_quantity_input
+    }
+    try:
+        with open(file_path, "r") as inventory:
+            products = json.load(inventory)  # This loads the JSON into a Python dictionary
+    except json.JSONDecodeError:
+        products = {"inventory": []}  # If the file is empty or not valid JSON, initialize it
 
-    return product_arr
+    # 2. Access the internal list and append to it
+    products["inventory"].append(product_obj)
+
+    with open(file_path, "w") as file:
+        json.dump(products, file, indent=4)  # Write the updated dictionary back to the file
+    print("Product added successfully!")
+    return product_obj
+
+def update_stock(product_id):
+    try:
+        with open(file_path, "r") as inventory:
+            products = json.load(inventory)
+    except json.JSONDecodeError:
+        print("Inventory is empty. Cannot update stock.")
+        return
+
+    for product in products["inventory"]:
+        if product["id"] == product_id:
+            print(f"\nProduct found: \n Name: {product['name']} \n Current Stock: {product['quantity']}")
+            new_quantity_input = get_valid_input("Enter new stock quantity: ", validate_quantity, "Please enter a valid quantity.")
+            product["quantity"] = new_quantity_input
+            break
+    else:
+        print("Product ID not found.")
+        return
+
+    with open(file_path, "w") as file:
+        json.dump(products, file, indent=4)
+    print(f"\nStock for Product ID {product_id} updated to {new_quantity_input}.")
 
 def save_inventory(order):
     try:

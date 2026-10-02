@@ -1,0 +1,10 @@
+{
+    "inventory": [
+        {
+            "id": "er",
+            "name": "egr",
+            "price": "34",
+            "quantity": "20"
+        }
+    ]
+}
