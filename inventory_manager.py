@@ -3,7 +3,6 @@ from product import Product
 from inventory import Inventory
 
 file_path = "inventory.json"
-current_order = []
 
 def main():
     inventory_cls = Inventory()
@@ -24,7 +23,7 @@ def main():
         if(menu_input == "1"):
             inventory_cls.display_all()
         elif(menu_input == "2"):
-            add_product()
+            add_product(inventory_cls)
         elif(menu_input == "3"):
             print("\nUpdate Stock")
             update_stock(inventory_cls)
@@ -108,23 +107,19 @@ def load_inventory(inventory_cls):
         print("Error")
         return
 
-def add_product():
+def add_product(inventory_cls):
 
     productId_input = get_valid_input("Enter Product ID (eg: P001): ", validate_product_id, "Product ID already exists or is invalid. Please try again.")
     product_name_input = get_valid_input("Enter Product Name: ", validate_product_name, "Product name is not valid. Please try again.")
     product_price_input = get_valid_input("Enter Product Price: ", validate_price, "Please enter a valid price.")
     product_quantity_input = get_valid_input("Enter Product Quantity: ", validate_quantity, "Please enter a valid quantity.")
 
-    product_obj = {
-        "id": productId_input,
-        "name": product_name_input,
-        "price": product_price_input,
-        "quantity": product_quantity_input
-    }
+    product = Product(productId_input, product_name_input, product_price_input, product_quantity_input)
 
-    current_order.append(product_obj)
-    print("Inventory saved successfully to " + file_path + ".\n")
-    return product_obj
+    if inventory_cls.add_product(product):
+        print("Product added. Choose 'Save Inventory' to write it to file.\n")
+    else:
+        print("Product ID already exists. Product not added.\n")
 
 
 def update_stock(inventory_cls):
