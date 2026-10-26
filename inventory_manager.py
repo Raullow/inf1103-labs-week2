@@ -32,12 +32,12 @@ def main():
            
             search_product(inventory_cls)
         elif(menu_input == "5"):
-            save_inventory(current_order)
+            save_inventory(inventory_cls)
             print("Saving inventory...\n")
 
         elif(menu_input == "6"):
             print("Saving inventory before exit...\n")
-            save_inventory(current_order)
+            save_inventory(inventory_cls)
             print("\n Thank you for using the Inventory Management System. Goodbye! \n Program terminated.")
             exit()
         else:
@@ -147,23 +147,21 @@ def search_product(inventory_cls):
         print("\nProduct found:")
         product.display_information()
 
-def save_inventory(order):
-    if order:
-        try:
-            with open(file_path, "r") as inventory:
-                products = json.load(inventory)
-        except json.JSONDecodeError:
-            products = {"inventory": []}
-
-        for item in order:
-            products["inventory"].append(item)
-
+def save_inventory(inventory_cls):
+    orders = []
+    if inventory_cls.get_products():
+        for product in inventory_cls.get_products():
+            orders.append({
+                "id": product.product_id,
+                "name": product.name,
+                "price": product.price,
+                "quantity": product.stock
+            })
         with open(file_path, "w") as file:
-            json.dump(products, file, indent=4)
+            json.dump(orders, file, indent=4)
         print("Products added successfully!")
-        current_order.clear()  # Clear the current order after saving
         return
-    elif not order:
+    elif not orders:
         print("No products to save.")
 
 # run the main function when the script is executed
