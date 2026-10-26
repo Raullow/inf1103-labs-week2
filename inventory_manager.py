@@ -1,9 +1,13 @@
 import json
+from product import Product 
+from inventory import Inventory
 
 file_path = "inventory.json"
 current_order = []
 
 def main():
+    inventory_cls = Inventory()
+    load_inventory(inventory_cls)
     print("----------MENU----------\n" 
         "1. Display all products\n"
         "2. Add product\n"
@@ -17,7 +21,7 @@ def main():
         menu_input = input("Enter option: ")
         quit_application(menu_input)
         if(menu_input == "1"):
-            load_inventory()
+            load_inventory(inventory_cls)
         elif(menu_input == "2"):
             add_product()
         elif(menu_input == "3"):
@@ -81,7 +85,7 @@ def quit_application(input):
         return
 
 # Reads inventory.json and converts data into array
-def load_inventory():
+def load_inventory(inventory_cls):
     try:
         # Try to create an empty json file
         with open(file_path, "x", encoding="utf-8") as inventory:
@@ -94,16 +98,9 @@ def load_inventory():
             with open(file_path, "r", encoding="utf-8") as inventory:
                 products = json.load(inventory)
 
-                # Check if json file is empty If not display data
-                if not products["inventory"]:
-                    print("There are no products currently.")
-                else:
-                    print("Current Inventory\n"
-                    "-----------------")
-                    for product in products["inventory"]:
-                        print(f"ID: {product['id']} | Name: {product['name']} | Price: ${product['price']} | Quantity: {product['quantity']}")
-                    print("------------------")
-                    return
+                for product in products["inventory"]:
+                    inventory_cls.add_product(Product(product["id"], product["name"], product["price"], product["quantity"]))
+                inventory_cls.display_all()
         except json.JSONDecodeError:
             print("There are no products currently.")
             return
@@ -128,6 +125,7 @@ def add_product():
     current_order.append(product_obj)
     print("Inventory saved successfully to " + file_path + ".\n")
     return product_obj
+
 
 def update_stock():
     product_id_input = get_valid_input("Enter Product ID to update stock: ", validate_product_id, "Product ID not found. Please try again.")

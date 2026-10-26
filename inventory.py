@@ -1,49 +1,32 @@
-
-from product import Product
-
-
 class Inventory:
+    """Responsibility: manage a collection of Product objects."""
+
     def __init__(self):
         self.__products = []
 
     def add_product(self, product):
-        if self.search_product(product.get_product_id()):
-            print("Product ID already exists.")
+        """Add a product. Returns False (and adds nothing) if the ID already exists."""
+        if self.search_product(product.product_id) is not None:
             return False
-
         self.__products.append(product)
-        print("Product added successfully.")
         return True
 
     def search_product(self, product_id):
+        """Return the Product with this ID, or None if not found."""
         for product in self.__products:
-            if product.get_product_id() == product_id:
+            if product.product_id == product_id:
                 return product
-
         return None
 
     def display_all(self):
-        if not self.__products:
+        if len(self.__products) == 0:
             print("There are no products currently.")
             return
-
-        print("\nCurrent Inventory")
-
+        print("Current Inventory\n-----------------")
         for product in self.__products:
             product.display_information()
-
-    def update_stock(self, product_id, quantity):
-        product = self.search_product(product_id)
-
-        if product is None:
-            print("Product ID not found.")
-            return False
-
-        product.update_stock(quantity)
-        return True
+        print("------------------")
 
     def get_products(self):
-        return self.__products
-
-    def clear_inventory(self):
-        self.__products.clear()
+        """Return a copy of the product list (used by the file handling code)."""
+        return list(self.__products)
