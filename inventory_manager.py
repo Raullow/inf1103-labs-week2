@@ -8,6 +8,7 @@ current_order = []
 def main():
     inventory_cls = Inventory()
     load_inventory(inventory_cls)
+
     print("----------MENU----------\n" 
         "1. Display all products\n"
         "2. Add product\n"
@@ -21,12 +22,12 @@ def main():
         menu_input = input("Enter option: ")
         quit_application(menu_input)
         if(menu_input == "1"):
-            load_inventory(inventory_cls)
+            inventory_cls.display_all()
         elif(menu_input == "2"):
             add_product()
         elif(menu_input == "3"):
             print("\nUpdate Stock")
-            update_stock()
+            update_stock(inventory_cls)
         elif(menu_input == "4"):
             print("\nSearch Product")
            
@@ -100,7 +101,6 @@ def load_inventory(inventory_cls):
 
                 for product in products["inventory"]:
                     inventory_cls.add_product(Product(product["id"], product["name"], product["price"], product["quantity"]))
-                inventory_cls.display_all()
         except json.JSONDecodeError:
             print("There are no products currently.")
             return
@@ -127,28 +127,21 @@ def add_product():
     return product_obj
 
 
-def update_stock():
-    product_id_input = get_valid_input("Enter Product ID to update stock: ", validate_product_id, "Product ID not found. Please try again.")
-    try:
-        with open(file_path, "r") as inventory:
-            products = json.load(inventory)
-    except json.JSONDecodeError:
-        print("Inventory is empty. Cannot update stock.")
-        return
-
-    for product in products["inventory"]:
-        if product["id"] == product_id_input:
-            print(f"\nProduct found: \n Name: {product['name']} \n Current Stock: {product['quantity']}")
-            new_quantity_input = get_valid_input("Enter new stock quantity: ", validate_quantity, "Please enter a valid quantity.")
-            product["quantity"] = new_quantity_input
-            break
-    else:
+def update_stock(inventory_cls):
+    product_id = get_valid_input("Enter Product ID to update stock: ", validate_product_id,
+                                 "Invalid Product ID. Must look like P001.")
+    product = inventory_cls.search_product(product_id)
+    if product is None:
         print("Product ID not found.")
         return
-
-    with open(file_path, "w") as file:
-        json.dump(products, file, indent=4)
-    print(f"\nStock for Product ID {product_id_input} updated to {new_quantity_input}.")
+ 
+    print("\nProduct found:")
+    product.display_information()
+    new_quantity = get_valid_input("Enter new stock quantity: ", validate_quantity,
+                                   "Please enter a valid quantity.")
+    product.update_stock(new_quantity)
+    print(f"\nStock for Product ID {product_id} updated to {product.stock}.")
+    
 
 def search_product():
     product_id_input = get_valid_input("Enter Product ID to search: ", validate_product_id, "Product ID not found. Please try again.")
