@@ -158,7 +158,7 @@ def save_inventory(inventory_cls):
                 "quantity": product.stock
             })
         with open(file_path, "w") as file:
-            json.dump(orders, file, indent=4)
+            json.dump({"inventory": orders}, file, indent=4)
         print("Products added successfully!")
         return
     elif not orders:
