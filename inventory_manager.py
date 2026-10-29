@@ -1,10 +1,13 @@
 import json
 from product import Product 
+from physical_product import PhysicalProduct
+from digital_product import DigitalProduct
 from inventory import Inventory
 
 file_path = "inventory.json"
 
 def main():
+    products = []
     inventory_cls = Inventory()
     load_inventory(inventory_cls)
 
@@ -77,6 +80,20 @@ def validate_quantity(quantity):
     quit_application(quantity)
     return quantity.isdigit() and int(quantity) > 0
 
+# Check if weight input is a positive number (float or int)
+def validate_weight(weight):
+    quit_application(weight)
+    return weight.replace('.', '', 1).isdigit() and float(weight) > 0
+
+# Check if download size input is a positive number (float or int)
+def validate_download_size(download_size):
+    quit_application(download_size)
+    return download_size.replace('.', '', 1).isdigit() and float(download_size) > 0
+
+def validate_product_type(product_type):
+    quit_application(product_type)
+    return product_type in ["1", "2"]
+
 def quit_application(input):
     if input == "quit":
         print("Closing application...")
@@ -99,7 +116,10 @@ def load_inventory(inventory_cls):
                 products = json.load(inventory)
 
                 for product in products["inventory"]:
-                    inventory_cls.add_product(Product(product["id"], product["name"], product["price"], product["quantity"]))
+                    if(product["type"] == "Physical"):
+                        inventory_cls.add_product(PhysicalProduct(product["id"], product["name"], product["price"], product["quantity"], product["weight"]))
+                    elif(product["type"] == "Digital"):
+                        inventory_cls.add_product(DigitalProduct(product["id"], product["name"], product["price"], product["quantity"], product["download_size"]))
         except json.JSONDecodeError:
             print("There are no products currently.")
             return
@@ -109,12 +129,18 @@ def load_inventory(inventory_cls):
 
 def add_product(inventory_cls):
 
+    product_type_input = get_valid_input("Enter Product Type: \n1. Physical\n2. Digital\nEnter your choice (1 or 2): ", validate_product_type, "Please enter '1' for Physical or '2' for Digital.")
     productId_input = get_valid_input("Enter Product ID (eg: P001): ", validate_product_id, "Product ID already exists or is invalid. Please try again.")
     product_name_input = get_valid_input("Enter Product Name: ", validate_product_name, "Product name is not valid. Please try again.")
     product_price_input = get_valid_input("Enter Product Price: ", validate_price, "Please enter a valid price.")
     product_quantity_input = get_valid_input("Enter Product Quantity: ", validate_quantity, "Please enter a valid quantity.")
-
-    product = Product(productId_input, product_name_input, product_price_input, product_quantity_input)
+    
+    if product_type_input == "1":
+        product_weight_input = get_valid_input("Enter Product Weight (kg): ", validate_weight, "Please enter a valid weight.")
+        product = PhysicalProduct(productId_input, product_name_input, product_price_input, product_quantity_input, product_weight_input)
+    elif product_type_input == "2":
+        product_download_size_input = get_valid_input("Enter Product Download Size (MB): ", validate_download_size, "Please enter a valid download size.")
+        product = DigitalProduct(productId_input, product_name_input, product_price_input, product_quantity_input, product_download_size_input)
 
     if inventory_cls.add_product(product):
         print("Product added. Choose 'Save Inventory' to write it to file.\n")
@@ -146,17 +172,32 @@ def search_product(inventory_cls):
     else:
         print("\nProduct found:")
         product.display_information()
+        product.get_fulfillment_info()
+        if(isinstance(product, PhysicalProduct)):
+            print(f"Estimated shipping cost: ${product.calculate_shipping_cost():.2f}")
 
 def save_inventory(inventory_cls):
     orders = []
     if inventory_cls.get_products():
         for product in inventory_cls.get_products():
-            orders.append({
-                "id": product.product_id,
-                "name": product.name,
-                "price": product.price,
-                "quantity": product.stock
-            })
+            if isinstance(product, PhysicalProduct):
+                orders.append({
+                    "id": product.product_id,
+                    "type": product.type,
+                    "name": product.name,
+                    "price": product.price,
+                    "quantity": product.stock,
+                    "weight": product.weight
+                })
+            elif isinstance(product, DigitalProduct):
+                orders.append({
+                    "id": product.product_id,
+                    "type": product.type,
+                    "name": product.name,
+                    "price": product.price,
+                    "quantity": product.stock,
+                    "download_size": product.download_size
+                })
         with open(file_path, "w") as file:
             json.dump({"inventory": orders}, file, indent=4)
         print("Products added successfully!")
