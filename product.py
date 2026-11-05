@@ -1,12 +1,14 @@
 from abc import abstractmethod
+from supplier import Supplier
 
 class Product:
 
-    def __init__(self, product_id, name, price, stock):
+    def __init__(self, product_id, name, price, stock, supplier: Supplier):
         self.__product_id = product_id
         self.__name = name
         self.__price = float(price)
         self.__stock = int(stock)
+        self.supplier: Supplier = supplier
 
     # Read-only access to the private attributes
     @property
