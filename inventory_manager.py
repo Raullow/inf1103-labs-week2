@@ -291,8 +291,7 @@ def create_order(inventory_cls):
 
         if product_id.lower() == "done":
             print("\nOrder Details:")
-            print(f"Order ID: {order.order_id}")
-            print(f"Total: ${order.calculate_total():.2f}")
+            order.display_order()
             break
 
         product = inventory_cls.search_product(product_id)
