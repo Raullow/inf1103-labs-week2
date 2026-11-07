@@ -15,7 +15,7 @@ class PhysicalProduct(Product, CanBeShipped):
 
     def display_information(self):
         print(f"ID: {self.product_id} | Type: {self.type} | Name: {self.name} | "
-              f"Price: ${self.price:g} | Quantity: {self.stock} | Weight: {self.weight} kg")
+              f"Price: ${self.price:.2f} | Quantity: {self.stock} | Weight: {self.weight} kg")
 
     def get_fulfillment_info(self):
         print(f"This product is a physical product with weight: {self.weight} kg. It requires shipping and handling.")

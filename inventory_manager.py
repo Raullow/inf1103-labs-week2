@@ -3,6 +3,9 @@ from product import Product
 from physical_product import PhysicalProduct
 from digital_product import DigitalProduct
 from inventory import Inventory
+from supplier import Supplier
+from order import Order
+from order_line import OrderLine
 
 file_path = "inventory.json"
 
@@ -94,6 +97,19 @@ def validate_product_type(product_type):
     quit_application(product_type)
     return product_type in ["1", "2"]
 
+def validate_supplier_id(supplier_id):
+    quit_application(supplier_id)
+    if len(supplier_id) == 4 and supplier_id.startswith('S') and supplier_id[1:].isdigit():
+        return supplier_id
+
+def validate_supplier_name(supplier_name):
+    quit_application(supplier_name)
+    return isinstance(supplier_name, str)
+
+def validate_supplier_email(supplier_email):
+    quit_application(supplier_email)
+    return "@" in supplier_email
+
 def quit_application(input):
     if input == "quit":
         print("Closing application...")
@@ -116,10 +132,28 @@ def load_inventory(inventory_cls):
                 products = json.load(inventory)
 
                 for product in products["inventory"]:
+                    supplier_data = product["supplier"]
+
+                    supplier = Supplier(
+                        supplier_data["supplier_id"],
+                        supplier_data["name"],
+                        supplier_data["contact_email"]
+                    )
+
                     if(product["type"] == "Physical"):
-                        inventory_cls.add_product(PhysicalProduct(product["id"], product["name"], product["price"], product["quantity"], product["weight"]))
+                        inventory_cls.add_product(PhysicalProduct(product["id"], 
+                                                                  product["name"], 
+                                                                  product["price"], 
+                                                                  product["quantity"], 
+                                                                  supplier,
+                                                                  product["weight"]))
                     elif(product["type"] == "Digital"):
-                        inventory_cls.add_product(DigitalProduct(product["id"], product["name"], product["price"], product["quantity"], product["download_size"]))
+                        inventory_cls.add_product(DigitalProduct(product["id"], 
+                                                                 product["name"], 
+                                                                 product["price"], 
+                                                                 product["quantity"],
+                                                                 supplier, 
+                                                                 product["download_size"]))
         except json.JSONDecodeError:
             print("There are no products currently.")
             return
@@ -129,18 +163,41 @@ def load_inventory(inventory_cls):
 
 def add_product(inventory_cls):
 
+    supplier_id = get_valid_input("Enter Supplier ID (e.g., S001): ", validate_supplier_id, "Please enter a valid Supplier ID.")
+    supplier_name = get_valid_input("Enter Supplier Name: ", validate_supplier_name, "Please enter a valid Supplier Name.")
+    supplier_email = get_valid_input("Enter Supplier Email: ", validate_supplier_email, "Please enter a valid Supplier Email.")
+
+    supplier = Supplier(
+        supplier_id,
+        supplier_name,
+        supplier_email
+)
+
     product_type_input = get_valid_input("Enter Product Type: \n1. Physical\n2. Digital\nEnter your choice (1 or 2): ", validate_product_type, "Please enter '1' for Physical or '2' for Digital.")
     productId_input = get_valid_input("Enter Product ID (eg: P001): ", validate_product_id, "Product ID already exists or is invalid. Please try again.")
-    product_name_input = get_valid_input("Enter Product Name: ", validate_product_name, "Product name is not valid. Please try again.")
+    product_name_input = get_valid_input("Enter Product Name: ", validate_product_name, "Please enter a valid product name.")
     product_price_input = get_valid_input("Enter Product Price: ", validate_price, "Please enter a valid price.")
     product_quantity_input = get_valid_input("Enter Product Quantity: ", validate_quantity, "Please enter a valid quantity.")
     
     if product_type_input == "1":
         product_weight_input = get_valid_input("Enter Product Weight (kg): ", validate_weight, "Please enter a valid weight.")
-        product = PhysicalProduct(productId_input, product_name_input, product_price_input, product_quantity_input, product_weight_input)
+        product = PhysicalProduct(
+            productId_input, 
+            product_name_input, 
+            product_price_input, 
+            product_quantity_input,
+            supplier,
+            product_weight_input,)
+        
     elif product_type_input == "2":
         product_download_size_input = get_valid_input("Enter Product Download Size (MB): ", validate_download_size, "Please enter a valid download size.")
-        product = DigitalProduct(productId_input, product_name_input, product_price_input, product_quantity_input, product_download_size_input)
+        product = DigitalProduct(
+            productId_input, 
+            product_name_input, 
+            product_price_input, 
+            product_quantity_input, 
+            supplier, 
+            product_download_size_input,)
 
     if inventory_cls.add_product(product):
         print("Product added. Choose 'Save Inventory' to write it to file.\n")
@@ -172,6 +229,7 @@ def search_product(inventory_cls):
     else:
         print("\nProduct found:")
         product.display_information()
+        product.display_supplier_information()
         product.get_fulfillment_info()
         if(isinstance(product, PhysicalProduct)):
             print(f"Estimated shipping cost: ${product.calculate_shipping_cost():.2f}")
@@ -187,6 +245,11 @@ def save_inventory(inventory_cls):
                     "name": product.name,
                     "price": product.price,
                     "quantity": product.stock,
+                    "supplier": {
+                                    "supplier_id": product.supplier.supplier_id,
+                                    "name": product.supplier.name,
+                                    "contact_email": product.supplier.contact_email
+                                },
                     "weight": product.weight
                 })
             elif isinstance(product, DigitalProduct):
@@ -196,6 +259,11 @@ def save_inventory(inventory_cls):
                     "name": product.name,
                     "price": product.price,
                     "quantity": product.stock,
+                    "supplier": {
+                                    "supplier_id": product.supplier.supplier_id,
+                                    "name": product.supplier.name,
+                                    "contact_email": product.supplier.contact_email
+                                },
                     "download_size": product.download_size
                 })
         with open(file_path, "w") as file:

@@ -3,7 +3,7 @@ from supplier import Supplier
 
 class Product:
 
-    def __init__(self, product_id, name, price, stock, supplier: Supplier):
+    def __init__(self, product_id: str, name: str, price: float, stock: int, supplier: Supplier):
         self.__product_id = product_id
         self.__name = name
         self.__price = float(price)
@@ -36,8 +36,20 @@ class Product:
 
     def display_information(self):
         print(f"ID: {self.__product_id} | Name: {self.__name} | "
-              f"Price: ${self.__price:g} | Quantity: {self.__stock}")
+              f"Price: ${self.__price:.2f} | Quantity: {self.__stock}")
 
     @abstractmethod
     def get_fulfillment_info(self):
         pass
+
+    def display_supplier_information(self):
+        print("Supplier Information:")
+        self.supplier.display_information()
+
+    def display_all_products(self) -> None:
+        for product in self.products:
+            product.display_information()
+
+    def show_product_details(product: Product) -> None:
+        product.display_information()
+        print(product.get_fulfillment_info())
