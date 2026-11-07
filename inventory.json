@@ -1,20 +1,30 @@
 {
     "inventory": [
         {
-            "id": "P006",
+            "id": "P001",
             "type": "Physical",
-            "name": "Laptop",
-            "price": 1100.0,
-            "quantity": 33,
-            "weight": 3.0
+            "name": "laptop",
+            "price": 1299.0,
+            "quantity": 102,
+            "supplier": {
+                "supplier_id": "S001",
+                "name": "Supplier 1",
+                "contact_email": "supplier1@email.com"
+            },
+            "weight": 9.1
         },
         {
-            "id": "P007",
-            "type": "Digital",
-            "name": "WinRar",
-            "price": 9.90,
-            "quantity": 1000,
-            "download_size": 13.3
+            "id": "P002",
+            "type": "Physical",
+            "name": "mouse",
+            "price": 59.0,
+            "quantity": 200,
+            "supplier": {
+                "supplier_id": "S002",
+                "name": "Supplier 2",
+                "contact_email": "supplier2@email.com"
+            },
+            "weight": 2.0
         }
     ]
 }

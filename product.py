@@ -36,7 +36,8 @@ class Product:
 
     def display_information(self):
         print(f"ID: {self.__product_id} | Name: {self.__name} | "
-              f"Price: ${self.__price:.2f} | Quantity: {self.__stock}")
+              f"Price: ${self.__price:.2f} | Quantity: {self.__stock} | "
+              f"Supplier: {self.supplier.name}")
 
     @abstractmethod
     def get_fulfillment_info(self):

@@ -20,7 +20,8 @@ def main():
         "3. Update Stock\n"
         "4. Search Product\n"
         "5. Save Inventory\n"
-        "6. Exit\n"
+        "6. Add Order\n"
+        "7. Exit\n"
         "------------------------\n")
 
     while True:
@@ -41,7 +42,11 @@ def main():
             save_inventory(inventory_cls)
             print("Saving inventory...\n")
 
-        elif(menu_input == "6"):
+        elif menu_input == "6":
+            print("\nAdd Order")
+            create_order(inventory_cls)
+
+        elif(menu_input == "7"):
             print("Saving inventory before exit...\n")
             save_inventory(inventory_cls)
             print("\n Thank you for using the Inventory Management System. Goodbye! \n Program terminated.")
@@ -272,6 +277,43 @@ def save_inventory(inventory_cls):
         return
     elif not orders:
         print("No products to save.")
+
+def create_order(inventory_cls):
+
+    order_id = input("Enter Order ID: ")
+    order = Order(order_id)
+
+    while True:
+
+        product_id = input(
+            "Enter Product ID to order (or 'done' to finish): "
+        )
+
+        if product_id.lower() == "done":
+            print("\nOrder Details:")
+            print(f"Order ID: {order.order_id}")
+            print(f"Total: ${order.calculate_total():.2f}")
+            break
+
+        product = inventory_cls.search_product(product_id)
+
+        if product is None:
+            print("Product not found.")
+            continue
+
+        quantity = input("Enter quantity: ")
+
+        if not quantity.isdigit() or int(quantity) <= 0:
+            print("Invalid quantity.")
+            continue
+
+        quantity = int(quantity)
+
+        if quantity > product.stock:
+            print("Insufficient stock.")
+            continue
+
+        order.add_order_line(product, quantity)
 
 # run the main function when the script is executed
 main()
