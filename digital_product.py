@@ -3,10 +3,10 @@ from supplier import Supplier
 
 class DigitalProduct(Product):
 
-    def __init__(self, product_id, name, price, stock, supplier: Supplier, download_size):
+    def __init__(self, product_id: str, name: str, price: float, stock: int, supplier: Supplier, download_size: float):
         super().__init__(product_id, name, price, stock, supplier)
-        self.__download_size = float(download_size)
-        self.type = "Digital"
+        self.__download_size: float = float(download_size)
+        self.type: str = "Digital"
 
     @property
     def download_size(self):

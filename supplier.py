@@ -1,8 +1,8 @@
 class Supplier:
-    def __init__(self, supplier_id, name, contact_email):
-        self.supplier_id = supplier_id
-        self.name = name
-        self.contact_email = contact_email
+    def __init__(self, supplier_id: int, name: str, contact_email: str):
+        self.supplier_id: int = supplier_id
+        self.name: str = name
+        self.contact_email: str = contact_email
 
     def display_information(self):
         print(f"Supplier ID: {self.supplier_id}")

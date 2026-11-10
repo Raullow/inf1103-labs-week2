@@ -4,10 +4,10 @@ from supplier import Supplier
 
 class PhysicalProduct(Product, CanBeShipped):
 
-    def __init__(self, product_id, name, price, stock, supplier: Supplier, weight):
+    def __init__(self, product_id: str, name: str, price: float, stock: int, supplier: Supplier, weight: float):
         super().__init__(product_id, name, price, stock, supplier)
-        self.__weight = float(weight)
-        self.type = "Physical"
+        self.__weight: float = float(weight)
+        self.type: str = "Physical"
 
     @property
     def weight(self):
