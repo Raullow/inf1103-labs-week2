@@ -51,6 +51,6 @@ class Product:
         for product in self.products:
             product.display_information()
 
-    def show_product_details(product: Product) -> None:
+    def show_product_details(product: "Product") -> None:
         product.display_information()
         print(product.get_fulfillment_info())
