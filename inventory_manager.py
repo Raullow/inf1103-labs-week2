@@ -6,6 +6,7 @@ from inventory import Inventory
 from supplier import Supplier
 from order import Order
 from order_line import OrderLine
+from product_factory import ProductFactory
 
 file_path = "inventory.json"
 
@@ -145,20 +146,16 @@ def load_inventory(inventory_cls):
                         supplier_data["contact_email"]
                     )
 
-                    if(product["type"] == "Physical"):
-                        inventory_cls.add_product(PhysicalProduct(product["id"], 
-                                                                  product["name"], 
-                                                                  product["price"], 
-                                                                  product["quantity"], 
-                                                                  supplier,
-                                                                  product["weight"]))
-                    elif(product["type"] == "Digital"):
-                        inventory_cls.add_product(DigitalProduct(product["id"], 
-                                                                 product["name"], 
-                                                                 product["price"], 
-                                                                 product["quantity"],
-                                                                 supplier, 
-                                                                 product["download_size"]))
+                    new_product = ProductFactory.create(product["type"],
+                                                        product["id"],
+                                                        product["name"],
+                                                        product["price"],
+                                                        product["quantity"],
+                                                        supplier,
+                                                        product.get("weight") if product["type"].lower() == "physical" else product.get("download_size")
+                                                    )
+
+                    inventory_cls.add_product(new_product)
         except json.JSONDecodeError:
             print("There are no products currently.")
             return
@@ -185,26 +182,35 @@ def add_product(inventory_cls):
     product_quantity_input = get_valid_input("Enter Product Quantity: ", validate_quantity, "Please enter a valid quantity.")
     
     if product_type_input == "1":
-        product_weight_input = get_valid_input("Enter Product Weight (kg): ", validate_weight, "Please enter a valid weight.")
-        product = PhysicalProduct(
-            productId_input, 
-            product_name_input, 
-            product_price_input, 
-            product_quantity_input,
-            supplier,
-            product_weight_input,)
-        
-    elif product_type_input == "2":
-        product_download_size_input = get_valid_input("Enter Product Download Size (MB): ", validate_download_size, "Please enter a valid download size.")
-        product = DigitalProduct(
-            productId_input, 
-            product_name_input, 
-            product_price_input, 
-            product_quantity_input, 
-            supplier, 
-            product_download_size_input,)
+        product_type = "Physical"
+        product_weight_input = get_valid_input(
+            "Enter Product Weight (kg): ",
+            validate_weight,
+            "Please enter a valid weight."
+        )
+        extra_attribute = float(product_weight_input)
 
-    if inventory_cls.add_product(product):
+    else:
+        product_type = "Digital"
+        product_download_size_input = get_valid_input(
+            "Enter Product Download Size (MB): ",
+            validate_download_size,
+            "Please enter a valid download size."
+        )
+        extra_attribute = float(product_download_size_input)
+
+
+    new_product = ProductFactory.create(
+        product_type,
+        productId_input,
+        product_name_input,
+        float(product_price_input),
+        int(product_quantity_input),
+        supplier,
+        extra_attribute
+    )
+
+    if inventory_cls.add_product(new_product):
         print("Product added. Choose 'Save Inventory' to write it to file.\n")
     else:
         print("Product ID already exists. Product not added.\n")
