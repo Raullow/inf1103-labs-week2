@@ -15,7 +15,7 @@
         },
         {
             "id": "P002",
-            "type": "Physical",
+            "type": "Digital",
             "name": "mouse",
             "price": 59.0,
             "quantity": 200,
@@ -24,7 +24,7 @@
                 "name": "Supplier 2",
                 "contact_email": "supplier2@email.com"
             },
-            "weight": 2.0
+            "download_size": 2.2
         }
     ]
 }

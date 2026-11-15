@@ -1,3 +1,4 @@
+import csv
 import json
 from product import Product 
 from physical_product import PhysicalProduct
@@ -14,6 +15,8 @@ def main():
     products = []
     inventory_cls = Inventory()
     load_inventory(inventory_cls)
+    # Load products from CSV file and add them to the inventory
+    load_products("products.csv", inventory_cls, Supplier("S001", "ABC Supplier", "supplier@abc.com"))
 
     print("----------MENU----------\n" 
         "1. Display all products\n"
@@ -162,6 +165,38 @@ def load_inventory(inventory_cls):
     except ValueError:
         print("Error")
         return
+
+def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
+    try:
+        file = open(path, newline="")
+    except FileNotFoundError:
+        print(f"Products file not found: {path}")
+    else:
+        loaded = 0
+        with file:
+            reader = csv.reader(file)
+            next(reader, None)  # skip header row
+            for row in reader:
+                try:
+                    product_type, product_id, name, price, stock = row
+                    product = ProductFactory.create(
+                        product_type,
+                        product_id,
+                        name,
+                        float(price),
+                        int(stock),
+                        supplier,
+                        0.0, 
+                    )
+                    if inventory.add_product(product):
+                        loaded += 1
+                    else:
+                        print(f"Skipped duplicate product ID: {product_id}")
+                except ValueError as e:
+                    print(f"Skipping bad row {row}: {e}")
+        print(f"{loaded} products loaded.")
+    finally:
+        print("Load attempt finished.")
 
 def add_product(inventory_cls):
 

@@ -23,9 +23,21 @@ class Product:
     def price(self):
         return self.__price
 
+    @price.setter
+    def price(self, value: float):
+        if value <= 0:
+            raise ValueError("Price must be greater than zero.")
+        self._price = value
+
     @property
     def stock(self):
         return self.__stock
+
+    @stock.setter
+    def stock(self, value: int):
+        if value < 0:
+            raise ValueError("Stock quantity cannot be negative.")
+        self._stock = value
 
     def update_stock(self, quantity):
         """Set the stock level. The Product decides what counts as a valid value."""
